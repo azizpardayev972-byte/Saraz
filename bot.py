@@ -2,8 +2,9 @@ import telebot
 import random
 from groq import Groq
 
-TOKEN = "8943790902:AAHTWz17cz4ShIFi-Fo2lkoqhC1nLBLkemU"
-GROQ_KEY = "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"
+TOKEN = os.environ.get("TOKEN")
+GROQ_KEY = os.environ.get("GROQ_KEY")
+
 
 bot = telebot.TeleBot(TOKEN)
 client = Groq(api_key=GROQ_KEY)
