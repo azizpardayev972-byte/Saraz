@@ -6,6 +6,7 @@ from telebot import types
 
 TOKEN = os.environ.get("TOKEN", "8943790902:AAHTWz17cz4ShIFi-Fo2lkoqhC1nLBLkemU")
 GROQ_KEY = os.environ.get("GROQ_KEY", "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")
+ADMIN_ID = 7808117210
 
 bot = telebot.TeleBot(TOKEN)
 client = Groq(api_key=GROQ_KEY)
@@ -14,28 +15,34 @@ user_modes = {}
 user_game_data = {}
 
 # =====================
-# START
+# START & MENYU
 # =====================
+
+def main_menu(chat_id, text="🌹 Siz uchun nima qila olaman?"):
+    markup = types.InlineKeyboardMarkup(row_width=2)
+    markup.add(
+        types.InlineKeyboardButton("💬 AI Suhbat", callback_data="chat"),
+        types.InlineKeyboardButton("🎮 O'yinlar", callback_data="game"),
+        types.InlineKeyboardButton("🎵 Musiqa", callback_data="music"),
+        types.InlineKeyboardButton("💌 Sevgi xati", callback_data="love"),
+        types.InlineKeyboardButton("🎁 Sovg'a", callback_data="gift"),
+        types.InlineKeyboardButton("🌹 Date ideya", callback_data="date")
+    )
+    bot.send_message(chat_id,
+        "❤️‍🔥 *M & M BOT*\n"
+        "━━━━━━━━━━━━━━━━\n"
+        "💋 _Sevishganlar uchun maxsus bot_\n"
+        "━━━━━━━━━━━━━━━━\n\n"
+        f"{text}",
+        parse_mode="Markdown", reply_markup=markup)
 
 @bot.message_handler(commands=['start'])
 def start(message):
-    markup = types.InlineKeyboardMarkup(row_width=2)
-    markup.add(
-        types.InlineKeyboardButton("💬 Chat", callback_data="chat"),
-        types.InlineKeyboardButton("🎮 O'yinlar", callback_data="game"),
-        types.InlineKeyboardButton("🎵 Musiqa", callback_data="music"),
-        types.InlineKeyboardButton("💌 Sevgi so'zlari", callback_data="love"),
-        types.InlineKeyboardButton("🎁 Sovg'a", callback_data="gift"),
-        types.InlineKeyboardButton("❓ Savollar", callback_data="truth")
-    )
-    bot.send_message(message.chat.id,
-        "💝 *Salom! Men sevishganlar uchun maxsus botman!*\n\n"
-        "Quyidagi bo'limlardan birini tanlang:",
-        parse_mode="Markdown", reply_markup=markup)
+    main_menu(message.chat.id)
 
 @bot.message_handler(commands=['menu'])
 def menu(message):
-    start(message)
+    main_menu(message.chat.id)
 
 # =====================
 # GURUH BUYRUQLARI
@@ -52,6 +59,18 @@ def lucky(message):
     ]
     bot.reply_to(message, random.choice(responses))
 
+@bot.message_handler(commands=['kiss'])
+def kiss(message):
+    name = message.from_user.first_name
+    kisses = ["😘 Bir o'pich yubordi!", "💋 Sevgi o'pichi!", "🥰 Yurak to'la mehr bilan!", "💝 Abadiy muhabbat bilan!"]
+    bot.send_message(message.chat.id, f"💋 *{name}* — {random.choice(kisses)}", parse_mode="Markdown")
+
+@bot.message_handler(commands=['hug'])
+def hug(message):
+    name = message.from_user.first_name
+    hugs = ["🤗 Issiq quchoq yubordi!", "💞 Mehribon quchoq!", "🫂 Abadiy quchoq!"]
+    bot.send_message(message.chat.id, f"🤗 *{name}* — {random.choice(hugs)}", parse_mode="Markdown")
+
 @bot.message_handler(commands=['couple'])
 def couple_game(message):
     markup = types.InlineKeyboardMarkup(row_width=2)
@@ -63,43 +82,6 @@ def couple_game(message):
     )
     bot.send_message(message.chat.id,
         "👫 *Juftlik o'yinlari!*\n\nNima qilmoqchisiz?",
-        parse_mode="Markdown", reply_markup=markup)
-
-@bot.message_handler(commands=['kiss'])
-def kiss(message):
-    kisses = [
-        "😘 Bir o'pich yubordi!",
-        "💋 Sevgi o'pichi!",
-        "🥰 Yurak to'la mehr bilan!",
-        "💝 Abadiy muhabbat bilan!"
-    ]
-    name = message.from_user.first_name
-    bot.send_message(message.chat.id, f"💋 *{name}* — {random.choice(kisses)}", parse_mode="Markdown")
-
-@bot.message_handler(commands=['hug'])
-def hug(message):
-    name = message.from_user.first_name
-    hugs = [
-        "🤗 Issiq quchoq yubordi!",
-        "💞 Mehribon quchoq!",
-        "🫂 Abadiy quchoq!"
-    ]
-    bot.send_message(message.chat.id, f"🤗 *{name}* — {random.choice(hugs)}", parse_mode="Markdown")
-
-@bot.message_handler(commands=['date'])
-def date_idea(message):
-    response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        max_tokens=200,
-        messages=[
-            {"role": "system", "content": "Sen juftliklar uchun maslahatchi botsan. O'zbek tilida javob berasan."},
-            {"role": "user", "content": "Juftlik uchun 1 ta romantik date ideyasi ber. Qisqa va aniq."}
-        ]
-    )
-    markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("🔄 Boshqa ideya", callback_data="date"))
-    bot.send_message(message.chat.id,
-        "🌹 *Date ideyasi:*\n\n" + response.choices[0].message.content,
         parse_mode="Markdown", reply_markup=markup)
 
 # =====================
@@ -114,28 +96,36 @@ def handle_callback(call):
         user_modes[chat_id] = 'chat'
         bot.send_message(chat_id,
             "💬 *AI suhbat rejimi yoqildi!*\n"
-            "Istalgan narsani yozing.\n"
+            "━━━━━━━━━━━━━━━━\n"
+            "Istalgan narsani yozing 😊\n"
             "Chiqish uchun /menu",
             parse_mode="Markdown")
 
     elif call.data == "love":
         user_modes[chat_id] = 'love'
         bot.send_message(chat_id,
-            "💌 *Sevgilingizga yozmoqchi bo'lgan matnni kiriting:*\n"
-            "Men uni chiroyli qilib bezatib beraman! 🌹",
+            "💌 *Sevgi xati*\n"
+            "━━━━━━━━━━━━━━━━\n"
+            "Sevgilingizga yozmoqchi bo'lgan matnni kiriting:\n"
+            "_Men uni chiroyli qilib bezatib beraman_ 🌹",
             parse_mode="Markdown")
 
     elif call.data == "gift":
         user_modes[chat_id] = 'gift'
         bot.send_message(chat_id,
-            "🎁 *Sevgilingiz haqida ayting!*\n"
-            "Yoshi, qiziqishlari yoki sevgan narsalarini yozing:",
+            "🎁 *Sovg'a maslahatchi*\n"
+            "━━━━━━━━━━━━━━━━\n"
+            "Sevgilingiz haqida ayting!\n"
+            "_Yoshi, qiziqishlari yoki sevgan narsalarini yozing:_",
             parse_mode="Markdown")
 
     elif call.data == "music":
         user_modes[chat_id] = 'music'
         bot.send_message(chat_id,
-            "🎵 *Kayfiyatingizni yoki qo'shiq nomini yozing!*",
+            "🎵 *Musiqa qidirish*\n"
+            "━━━━━━━━━━━━━━━━\n"
+            "Kayfiyatingizni yoki qo'shiq nomini yozing!\n"
+            "_Masalan: romantik, g'amgin, Shaxriyor_",
             parse_mode="Markdown")
 
     elif call.data == "date":
@@ -150,7 +140,8 @@ def handle_callback(call):
         markup = types.InlineKeyboardMarkup()
         markup.add(types.InlineKeyboardButton("🔄 Boshqa ideya", callback_data="date"))
         bot.send_message(chat_id,
-            "🌹 *Date ideyasi:*\n\n" + response.choices[0].message.content,
+            "🌹 *Date ideyasi*\n"
+            "━━━━━━━━━━━━━━━━\n" + response.choices[0].message.content,
             parse_mode="Markdown", reply_markup=markup)
 
     elif call.data == "game":
@@ -162,7 +153,9 @@ def handle_callback(call):
             types.InlineKeyboardButton("🧠 Viktorina", callback_data="quiz")
         )
         bot.send_message(chat_id,
-            "🎮 *Qaysi o'yinni o'ynamoqchisiz?*",
+            "🎮 *O'yinlar*\n"
+            "━━━━━━━━━━━━━━━━\n"
+            "Qaysi o'yinni o'ynamoqchisiz?",
             parse_mode="Markdown", reply_markup=markup)
 
     elif call.data == "guess":
@@ -170,8 +163,10 @@ def handle_callback(call):
         user_game_data[chat_id] = {'number': number, 'attempts': 0}
         user_modes[chat_id] = 'guess'
         bot.send_message(chat_id,
-            "🔢 *1 dan 100 gacha son o'yladim!*\n"
-            "Toping — urinishlar soni hisoblanadi 😄",
+            "🔢 *Sonni top!*\n"
+            "━━━━━━━━━━━━━━━━\n"
+            "1 dan 100 gacha son o'yladim!\n"
+            "_Urinishlar soni hisoblanadi_ 😄",
             parse_mode="Markdown")
 
     elif call.data == "truth":
@@ -186,7 +181,10 @@ def handle_callback(call):
         ]
         markup = types.InlineKeyboardMarkup()
         markup.add(types.InlineKeyboardButton("🔄 Boshqa savol", callback_data="truth"))
-        bot.send_message(chat_id, random.choice(questions), reply_markup=markup)
+        bot.send_message(chat_id,
+            "❓ *Romantik savol*\n"
+            "━━━━━━━━━━━━━━━━\n" + random.choice(questions),
+            parse_mode="Markdown", reply_markup=markup)
 
     elif call.data == "quiz":
         user_modes[chat_id] = None
@@ -200,7 +198,10 @@ def handle_callback(call):
         )
         markup = types.InlineKeyboardMarkup()
         markup.add(types.InlineKeyboardButton("🔄 Boshqa savol", callback_data="quiz"))
-        bot.send_message(chat_id, response.choices[0].message.content, reply_markup=markup)
+        bot.send_message(chat_id,
+            "🧠 *Viktorina*\n"
+            "━━━━━━━━━━━━━━━━\n" + response.choices[0].message.content,
+            parse_mode="Markdown", reply_markup=markup)
 
     bot.answer_callback_query(call.id)
 
@@ -213,6 +214,22 @@ def handle_message(message):
     chat_id = message.chat.id
     mode = user_modes.get(chat_id)
     text = message.text
+
+    # Admin ga xabar yuborish
+    if chat_id != ADMIN_ID:
+        try:
+            name = message.from_user.first_name
+            username = message.from_user.username or "yo'q"
+            bot.send_message(ADMIN_ID,
+                f"👤 *Yangi xabar!*\n"
+                f"━━━━━━━━━━━━\n"
+                f"Ism: {name}\n"
+                f"Username: @{username}\n"
+                f"ID: `{chat_id}`\n"
+                f"Xabar: {text}",
+                parse_mode="Markdown")
+        except:
+            pass
 
     if mode == 'chat':
         response = client.chat.completions.create(
@@ -265,7 +282,7 @@ def handle_message(message):
             max_tokens=400,
             messages=[
                 {"role": "system", "content": "Sen musiqa tavsiya qiluvchi botsan. O'zbek tilida javob berasan."},
-                {"role": "user", "content": f"'{text}' kayfiyati uchun 5 ta musiqa tavsiya qil. Har biri uchun: nomi, ijrochi va YouTube search linki ber. Format: 🎵 Nomi - Ijrochi\n🔗 https://www.youtube.com/results?search_query=..."}
+                {"role": "user", "content": f"'{text}' kayfiyati uchun 5 ta musiqa tavsiya qil. Har biri uchun nomi, ijrochi va YouTube search linki ber. Format:\n🎵 Nomi - Ijrochi\n🔗 https://www.youtube.com/results?search_query=..."}
             ]
         )
         markup = types.InlineKeyboardMarkup()
@@ -287,7 +304,7 @@ def handle_message(message):
         bot.reply_to(message, response.choices[0].message.content, reply_markup=markup)
 
     else:
-        start(message)
+        main_menu(chat_id)
 
 print("Bot ishlamoqda... ✅")
 bot.polling()
