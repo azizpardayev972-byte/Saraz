@@ -36,9 +36,9 @@ def main_menu(chat_id):
         types.InlineKeyboardButton("🔮 Maslahat", callback_data="advice")
     )
     bot.send_message(chat_id,
-        "❤️‍🔥 *M & M BOT*\n"
+        "❤ *M BOT*\n"
         "━━━━━━━━━━━━━━━━\n"
-        "💋 _Sevishganlar uchun maxsus bot_\n"
+        " _Sevishganlar uchun maxsus bot_\n"
         "━━━━━━━━━━━━━━━━\n\n"
         "🌹 Siz uchun nima qila olaman?",
         parse_mode="Markdown", reply_markup=markup)
