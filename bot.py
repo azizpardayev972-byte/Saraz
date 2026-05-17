@@ -18,7 +18,7 @@ user_game_data = {}
 # START & MENYU
 # =====================
 
-def main_menu(chat_id, text="🌹 Siz uchun nima qila olaman?"):
+def main_menu(chat_id, text=" Sizga qanday yordam bera olaman "):
     markup = types.InlineKeyboardMarkup(row_width=2)
     markup.add(
         types.InlineKeyboardButton("💬 AI Suhbat", callback_data="chat"),
@@ -29,9 +29,9 @@ def main_menu(chat_id, text="🌹 Siz uchun nima qila olaman?"):
         types.InlineKeyboardButton("🌹 Date ideya", callback_data="date")
     )
     bot.send_message(chat_id,
-        "❤️‍🔥 *M & M BOT*\n"
+        "❤️‍🔥 *SEVGI BOT*\n"
         "━━━━━━━━━━━━━━━━\n"
-        "💋 _Sevishganlar uchun maxsus bot_\n"
+        " _Sevishganlar uchun maxsus bot_\n"
         "━━━━━━━━━━━━━━━━\n\n"
         f"{text}",
         parse_mode="Markdown", reply_markup=markup)
