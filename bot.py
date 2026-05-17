@@ -14,10 +14,10 @@ client = Groq(api_key=GROQ_KEY)
 
 user_modes = {}
 user_game_data = {}
-user_dates = {}  # muhim sanalar
-custom_truths = []  # o'z savollar
-custom_dares = []   # o'z vazifalar
-compatibility_data = {}  # mos kelish testi
+user_dates = {}
+custom_truths = []
+custom_dares = []
+compatibility_data = {}
 
 # =====================
 # MENYU
@@ -36,11 +36,11 @@ def main_menu(chat_id):
         types.InlineKeyboardButton("🔮 Maslahat", callback_data="advice")
     )
     bot.send_message(chat_id,
-        "❤️‍🔥 *M BOT*\n"
+        "❤️‍🔥 *M & M BOT*\n"
         "━━━━━━━━━━━━━━━━\n"
-        " _Sevishganlar uchun maxsus bot_\n"
+        "💋 _Sevishganlar uchun maxsus bot_\n"
         "━━━━━━━━━━━━━━━━\n\n"
-        " Siz uchun nima qila olaman?",
+        "🌹 Siz uchun nima qila olaman?",
         parse_mode="Markdown", reply_markup=markup)
 
 @bot.message_handler(commands=['start', 'menu'])
@@ -139,10 +139,6 @@ def dare(message):
         "🎯 *Shart!*\n━━━━━━━━━━━━━━━━\n" + random.choice(vazifalar),
         parse_mode="Markdown", reply_markup=markup)
 
-# =====================
-# MUHIM SANALAR
-# =====================
-
 @bot.message_handler(commands=['sana'])
 def add_date(message):
     user_modes[message.chat.id] = 'add_date'
@@ -153,26 +149,18 @@ def add_date(message):
         "Masalan: `Birinchi uchrashuv | 14.02.2023`",
         parse_mode="Markdown")
 
-# =====================
-# MOS KELISH TESTI
-# =====================
-
 @bot.message_handler(commands=['mos'])
 def compatibility(message):
     chat_id = message.chat.id
     user_id = message.from_user.id
     name = message.from_user.first_name
-
     if chat_id not in compatibility_data:
         compatibility_data[chat_id] = {}
-
     compatibility_data[chat_id][user_id] = name
     count = len(compatibility_data[chat_id])
-
     if count == 1:
         bot.send_message(chat_id,
-            f"💕 *{name}* tayyor!\n"
-            "Ikkinchi kishi ham /mos yozsin!",
+            f"💕 *{name}* tayyor!\nIkkinchi kishi ham /mos yozsin!",
             parse_mode="Markdown")
     elif count >= 2:
         names = list(compatibility_data[chat_id].values())
@@ -242,8 +230,8 @@ def handle_callback(call):
             parse_mode="Markdown")
 
     elif call.data == "dates":
-        chat_id_dates = user_dates.get(chat_id, {})
-        if not chat_id_dates:
+        chat_dates = user_dates.get(chat_id, {})
+        if not chat_dates:
             bot.send_message(chat_id,
                 "📅 *Muhim sanalar*\n"
                 "━━━━━━━━━━━━━━━━\n"
@@ -253,7 +241,7 @@ def handle_callback(call):
         else:
             today = datetime.now()
             text = "📅 *Muhim sanalar*\n━━━━━━━━━━━━━━━━\n"
-            for name, date in chat_id_dates.items():
+            for name, date in chat_dates.items():
                 delta = (date - today).days
                 if delta < 0:
                     years = today.year - date.year
@@ -482,7 +470,7 @@ def handle_message(message):
                     parse_mode="Markdown", reply_markup=markup)
                 user_modes[chat_id] = None
         except:
-            bot.send_message(chat_id, "Faqat son kiriting!")
+            pass
 
     elif mode == 'music':
         user_modes[chat_id] = None
@@ -511,9 +499,6 @@ def handle_message(message):
         markup = types.InlineKeyboardMarkup()
         markup.add(types.InlineKeyboardButton("🎁 Yana so'rash", callback_data="gift"))
         bot.reply_to(message, response.choices[0].message.content, reply_markup=markup)
-
-    else:
-        main_menu(chat_id)
 
 print("Bot ishlamoqda... ✅")
 bot.polling()
