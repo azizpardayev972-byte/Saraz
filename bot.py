@@ -19,9 +19,7 @@ custom_truths = []
 custom_dares = []
 compatibility_data = {}
 
-# =====================
-# MENYU
-# =====================
+
 
 def main_menu(chat_id):
     markup = types.InlineKeyboardMarkup(row_width=2)
@@ -47,9 +45,7 @@ def main_menu(chat_id):
 def start(message):
     main_menu(message.chat.id)
 
-# =====================
-# GURUH BUYRUQLARI
-# =====================
+
 
 @bot.message_handler(commands=['lucky'])
 def lucky(message):
@@ -87,9 +83,7 @@ def couple_game(message):
         "👫 *Juftlik o'yinlari!*\n\nNima qilmoqchisiz?",
         parse_mode="Markdown", reply_markup=markup)
 
-# =====================
-# HAQIQAT YOKI SHART
-# =====================
+
 
 @bot.message_handler(commands=['addsavol'])
 def add_truth(message):
@@ -176,9 +170,7 @@ def compatibility(message):
             parse_mode="Markdown")
         compatibility_data[chat_id] = {}
 
-# =====================
-# INLINE TUGMALAR
-# =====================
+
 
 @bot.callback_query_handler(func=lambda call: True)
 def handle_callback(call):
@@ -364,9 +356,7 @@ def handle_callback(call):
 
     bot.answer_callback_query(call.id)
 
-# =====================
-# BARCHA XABARLAR
-# =====================
+
 
 @bot.message_handler(func=lambda m: True)
 def handle_message(message):
